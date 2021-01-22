@@ -1,0 +1,33 @@
+{
+  "UserData" : {
+    "AuthorizationKey" : "20KF830E0J364FY23EQS",
+    "TargetID" : "",
+    "ProcessID" : "",
+    "SenderID" : "",
+    "BusinessObjectName" : "",
+    "MessageProcessingMode" : "",
+    "EnvironmentCode" : "",
+    "version" : 1,
+    "TransactionType" : "",
+    "ResponseEndPointURI" : "",
+    "CreationDateTime" : "2008-09-29"
+  },
+  "InputParameters" : {
+    "I_TAB_SPA_SRCH" : {
+      "I_TAB_SPA_SRCH_ITEM" : [ {
+        "I_ORG_ID" : 110,
+       "I_SOLD_TO_CUST_ID" : 1656078,
+        "I_SPA_NUMBER" : "380105",
+        "I_PROJECT_NAME" : "",
+        "I_SALES_REP" : "",
+        "I_EXPIRATION_DATE_FROM" : "",
+        "I_EXPIRATION_DATE_TO" : "",
+        "I_CONTRACTOR_NAME" : "",
+        "I_SORT_BY" : 1,
+        "I_SORT_TYPE" : "ASCENDING",
+        "I_ROW_START" : 1,
+        "I_ROW_COUNT" : 10
+      } ]
+    }
+  }
+}

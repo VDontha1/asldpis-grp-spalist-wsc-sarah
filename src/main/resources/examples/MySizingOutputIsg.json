@@ -1,0 +1,26 @@
+{
+  "OutputParameters" : {
+    "@xmlns" : "http://xmlns.oracle.com/apps/aso/rest/EMRSizingInfo/get_my_sizings/",
+    "@xmlns:xsi" : "http://www.w3.org/2001/XMLSchema-instance",
+    "O_MYSIZING_LIST" : {
+      "O_MYSIZING_LIST_ITEM" : [ {
+        "REFERENCE_ID" : "O422389",
+        "MODEL_NAME" : "FT_871130F",
+        "CREATION_DATE" : "2019-12-30T08:09:02.000+00:00",
+        "IS_SIZING_USED" : "T",
+        "PREPARED_BY" : "Alex.Falter@Emerson.com",
+        "REVISION_NUMBER" : null
+      }, {
+        "REFERENCE_ID" : "O500272",
+        "MODEL_NAME" : "FT_CMFS100M ",
+        "CREATION_DATE" : "2020-08-25T03:48:06.000+00:00",
+        "IS_SIZING_USED" : "T",
+        "PREPARED_BY" : "manohara.tn@emerson.com",
+        "REVISION_NUMBER" : null
+      } ]
+    },
+    "O_ERROR_FLAG" : null,
+    "O_ERROR_CODE" : null,
+    "O_ERROR_MESSAGE" : null
+  }
+}

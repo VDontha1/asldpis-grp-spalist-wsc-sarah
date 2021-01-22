@@ -1,0 +1,30 @@
+listener:
+  host: "0.0.0.0"
+  port: "8091"
+  basePath: "/request"
+  path: "/b2c/vs/json/v1/getSpaViewList"
+  connectionIdleTimeout: "900000"
+  
+sarah:
+  db:
+    host: "usmtniadinfdb08.dev.emrsn.org"
+    port: "34101"
+    user: "XXWCS"
+    password: "Emerson_123"
+    serviceName: "sarahd5"
+    maxPoolSize: "5"
+    minPoolSize: "1"
+    
+app.version: "v1"
+error:
+ log:
+  level: "info"
+    
+errorProperties:
+  emailFlag: "false"
+  sourceSystem: "WSC"
+  targetSystem: "Sarah"
+  mailAddress: "venkatasrikanth.dontha@emerson.com"
+
+businessName: "GOS GetSpaViewList"
+businessId: ""

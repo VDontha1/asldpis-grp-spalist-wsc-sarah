@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:tls="http://www.mulesoft.org/schema/mule/tls"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:secure-properties="http://www.mulesoft.org/schema/mule/secure-properties" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/secure-properties http://www.mulesoft.org/schema/mule/secure-properties/current/mule-secure-properties.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
+	<import doc:name="Import" doc:id="96d3c2ee-295a-44b9-8e48-7a15fa49a473" file="clientLoggingPublisherFlow.xml" />
+	<import doc:name="Import" doc:id="6f2a397e-79de-4406-a44a-56d9e5693848" file="global-exception-handling.xml" />
+	<secure-properties:config name="Secure_Properties_Config" doc:name="Secure Properties Config" doc:id="d158f434-e2b0-46e9-bb56-576ece28be70" file="properties\${env}.yaml" key="${key}" >
+		<secure-properties:encrypt algorithm="Blowfish" />
+	</secure-properties:config>
+	<configuration doc:name="Configuration" doc:id="62828440-4d4d-464d-8812-37194773de88" defaultErrorHandler-ref="global-exception-handlingOnErrorPropagate" />
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="8d8de5b1-f32d-443d-8c50-f75aeda5febe" >
+		<http:listener-connection host="${secure::listener.host}" port="${secure::listener.port}" />
+	</http:listener-config>
+	<global-property doc:name="Global Property" doc:id="98c50f33-72b7-4fe3-9c80-1fa67a31a7d4" name="env" value="dev" />
+	<global-property doc:name="Global Property" doc:id="03219729-0ca6-4f06-ba42-698fc7d62905" name="key" value="Mulekey@678" />
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="046c6e95-b6b6-49ec-91ef-bcea13bb4f0b" >
+		<db:oracle-connection host="${secure::sarah.db.host}" port="${secure::sarah.db.port}" user="${secure::sarah.db.user}" password="${secure::sarah.db.password}" serviceName="${secure::sarah.db.serviceName}" >
+			<db:pooling-profile minPoolSize="3" />
+			<db:column-types >
+				<db:column-type id="2003" typeName="APPS.XXWCS_TAB_E818_SPA_SEARCH_IN" />
+				<db:column-type id="2002" typeName="APPS.XXWCS_REC_E818_SPA_SEARCH_IN" />
+				<db:column-type id="2003" typeName="APPS.XXWCS_TAB_E818_SPA_SEARCH_OUT" />
+			</db:column-types>
+		</db:oracle-connection>
+	</db:config>
+	
+
+</mule>

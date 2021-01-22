@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
+	<flow name="post:\getSpaViewList:asldpis-grp-spalist-wsc-sarah-config" doc:id="a130f005-e7b9-4df2-a1c6-cc735bb654b9">
+		<http:listener doc:name="Wsc Listener" doc:id="91359e1b-016e-43c8-856c-4fed34b0925b" config-ref="HTTP_Listener_config" path="${secure::listener.path}">
+			<http:response statusCode="#[vars.httpStatusCode default 200]" />
+			<http:error-response statusCode="#[vars.httpStatusCode default 400]">
+				<http:body><![CDATA[#[payload]]]></http:body>
+			</http:error-response>
+		
+</http:listener>
+		<ee:transform doc:name="tracePointDescription" doc:id="0887f586-a090-4252-b062-774940ab5c63">
+			<ee:message>
+			</ee:message>
+			<ee:variables>
+				<ee:set-variable variableName="tracePointDescription"><![CDATA[%dw 2.0
+output application/java
+---
+{
+	"tracePointDescription": "Starting of the " ++ Mule::p('app.name')
+}]]></ee:set-variable>
+				<ee:set-variable variableName="businessObject"><![CDATA[%dw 2.0
+output application/java
+---
+{
+      businessObjectName: "GetSpaViewList"
+}]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<flow-ref doc:name="clientLoggingPublisherFlow" doc:id="17b2e4de-9e4e-4bdb-919f-54f9dc7eb870" name="clientLoggingPublisherFlow" />
+		<flow-ref doc:name="asldpis-grp-gtvwrtndtls-wsc-sarahsubFlow" doc:id="47da22ed-ade8-40cb-aa24-dc67ed55bd21" name="asldpis-grp-spalist-wsc-sarahsubFlow" />
+		
+	</flow>
+	<flow name="asldpis-grp-spalist-wsc-sarahsubFlow" doc:id="7b9aa52d-d2bc-49bd-8bbf-6b2c183398eb" >
+		<flow-ref doc:name="asldpis-grp-gtvwrtndtls-wsc-sarahsetInputFlow" doc:id="d87b9341-ffbe-423d-88d6-324ec3800f4c" name="asldpis-grp-spalist-wsc-sarahsetInputFlow"/>
+		<db:stored-procedure doc:name="Stored procedure" doc:id="8d3edf93-a401-4e88-bd8c-11a44751e468" config-ref="Database_Config">
+			<db:sql >{call APPS.XXWCS_SPA_SEARCH_E818_EGS_PKG.SEARCH_SPA(:i_tab_spa_srch, :o_tab_spa_srch, :o_cunt_spas_in_call, :o_error_flag, :o_error_code, :o_error_msg)}
+</db:sql>
+			<db:input-parameters ><![CDATA[#[{
+	i_tab_spa_srch: vars.sarahInput
+}]]]></db:input-parameters>
+			<db:output-parameters >
+				<db:output-parameter key="o_tab_spa_srch" customType="APPS.XXWCS_TAB_E818_SPA_SEARCH_OUT"/>
+				<db:output-parameter key="o_cunt_spas_in_call" type="NUMERIC" />
+				<db:output-parameter key="o_error_flag" type="VARCHAR" />
+				<db:output-parameter key="o_error_code" type="VARCHAR" />
+				<db:output-parameter key="o_error_msg" type="VARCHAR" />
+			
+</db:output-parameters>
+		</db:stored-procedure>
+		<ee:transform doc:name="responseToWsc" doc:id="6b59d105-4465-498b-9a48-8afdc8e0ca58">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+
+fun formatDate(item) = if(item != null) item as LocalDateTime as String {format: "yyyy-MM-dd"} ++ "T" ++ item as DateTime as String {format: "HH:mm:ss.SSS+00:00"}
+else
+null
+---
+{
+   "O_TAB_SPA_SRCH": {"O_TAB_SPA_SRCH_ITEM": payload.o_tab_spa_srch map (lineVar, lineIndex) -> {
+      "O_SPA_NUMBER": lineVar[0],
+      "O_CUSTOMER_NUMBER": lineVar[1],
+      "O_CUSTOMER_NAME": lineVar[2],
+      "O_SPA_TYPE": lineVar[3],
+      "O_PROJECT_NAME": lineVar[4],
+      "O_PROJECT_CITY": lineVar[5],
+      "O_PROJECT_STATE": lineVar[6],
+      "O_PROJECT_COUNTRY": lineVar[7],
+      "O_SPA_STATUS": lineVar[8],
+      "O_EXPIRATION_DATE": formatDate(lineVar[9])
+   }},
+   "O_CUNT_SPAS_IN_CALL": payload.o_cunt_spas_in_call,
+   "O_ERROR_FLAG": payload.o_error_flag,
+   "O_ERROR_CODE": payload.o_error_code,
+   "O_ERROR_MSG": payload.o_error_msg
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<ee:transform doc:name="tracePointDescription" doc:id="1f854943-ff05-4fa6-bf4c-33ab2a09735c">
+			<ee:message>
+			</ee:message>
+			<ee:variables>
+				<ee:set-variable variableName="tracePointDescription"><![CDATA[%dw 2.0
+output application/java
+---
+{
+	'tracePointDescription': "Ending of the " ++ Mule::p('app.name')	
+}]]></ee:set-variable>
+				<ee:set-variable variableName="businessObject"><![CDATA[%dw 2.0
+output application/java
+---
+{"businessIdentifier1": "GetSpaViewList Output"
+}]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<flow-ref doc:name="clientLoggingPublisherFlow" doc:id="7b67b3b8-82d6-4010-adc3-32495ec64cb1" name="clientLoggingPublisherFlow" />
+		<error-handler >
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="f241e4b0-d824-441d-88c8-f8a46a435b9d">
+				<ee:transform doc:name="Transform Message" doc:id="4719af67-edf5-4834-91ac-b6db82a2397e" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+   "ErrorCode": "MULE-SYSTEM",
+   "ErrorCategory": "SYSTEM_ERROR",
+   "ErrorName": error.errorType.identifier default '',
+   "ErrorDescription": error.description[0 to 70] default '' ++ "...",
+   "ErrorResolution": "Please check fault details for more info."
+}]]></ee:set-payload>
+					</ee:message>
+					<ee:variables >
+						<ee:set-variable variableName="httpStatusCode" ><![CDATA[%dw 2.0
+output application/java
+---
+400]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+			</on-error-propagate>
+		</error-handler>
+	
+</flow>
+	<flow name="asldpis-grp-spalist-wsc-sarahsetInputFlow" doc:id="d31f81aa-42a8-49ea-a18f-203c7c278e61" >
+		<ee:transform doc:name="payloadToSarah" doc:id="8ad5f705-03e1-4107-9b8a-fbcf11b373e1">
+			<ee:message>
+			</ee:message>
+			<ee:variables>
+				<ee:set-variable variableName="sarahInput"><![CDATA[%dw 2.0
+output application/java
+
+fun toITabSpaSrch(iTabSpaSrch) = Db::createStruct("Database_Config","APPS.XXWCS_REC_E818_SPA_SEARCH_IN",[iTabSpaSrch.I_ORG_ID, iTabSpaSrch.I_SOLD_TO_CUST_ID, iTabSpaSrch.I_SPA_NUMBER, iTabSpaSrch.I_PROJECT_NAME, iTabSpaSrch.I_SALES_REP,iTabSpaSrch.I_EXPIRATION_DATE_FROM, iTabSpaSrch.I_EXPIRATION_DATE_TO, iTabSpaSrch.I_CONTRACTOR_NAME, iTabSpaSrch.I_SORT_BY, iTabSpaSrch.I_SORT_TYPE,iTabSpaSrch.I_ROW_START, iTabSpaSrch.I_ROW_COUNT])
+---
+Db::createArray("Database_Config","APPS.XXWCS_TAB_E818_SPA_SEARCH_IN", payload.InputParameters.I_TAB_SPA_SRCH.I_TAB_SPA_SRCH_ITEM map (item, index) -> (toITabSpaSrch(item)))
+]]></ee:set-variable>
+			</ee:variables>
+		
+</ee:transform>
+	</flow>
+
+</mule>
